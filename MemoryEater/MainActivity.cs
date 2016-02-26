@@ -43,6 +43,7 @@ namespace MemoryEater
             _service.GetThing()
                 .ContinueWith(data =>
                 {
+                    GC.Collect();
                     RunOnUiThread(() =>
                     {
                         _textView.Text = data.Result.Thing1.Foo;
