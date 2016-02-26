@@ -7,6 +7,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Util;
 
 namespace MemoryEater
 {
@@ -16,6 +17,7 @@ namespace MemoryEater
         private Timer _timer;
         private FauxService _service;
         private TextView _textView;
+        private CheckBox _checkbox;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -24,6 +26,7 @@ namespace MemoryEater
             SetContentView(Resource.Layout.Main);
             
             _textView = FindViewById<TextView>(Resource.Id.MyText);
+            _checkbox = FindViewById<CheckBox>(Resource.Id.Checkbox);
             _service = new FauxService();
 
             FindViewById<Button>(Resource.Id.MyButton).Click += (sender, args) =>
@@ -43,7 +46,11 @@ namespace MemoryEater
             _service.GetThing()
                 .ContinueWith(data =>
                 {
-                    GC.Collect();
+                    if (_checkbox.Checked)
+                    {
+                        GC.Collect();
+                        Log.Info("GC", "Explicit GC");
+                    }
                     RunOnUiThread(() =>
                     {
                         _textView.Text = data.Result.Thing1.Foo;
